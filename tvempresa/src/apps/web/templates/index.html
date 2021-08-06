@@ -1,0 +1,109 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block social_facebook %}
+  <meta property="og:url"           content="http://tevempresa.com" />
+  <meta property="og:type"          content="article" />
+  <meta property="og:title"         content="Teve Empresa" />
+  <meta property="og:description"   content="El mejor canal de negocios, para las empresas." />
+  <meta property="og:image"         content="http://tevempresa.com/static/img/imagen_facebook.png" />
+  <meta property="og:image:width"   content="1920"/>
+  <meta property="og:image:height"   content="1079" />
+
+  <link href="http://videojs.github.io/font/css/videojs-icons.css" rel="stylesheet" />
+  <link href="https://vjs.zencdn.net/5.16/video-js.min.css" rel="stylesheet" />
+  <script src="https://vjs.zencdn.net/5.16/video.js"></script>
+  <script src="https://cdn.rawgit.com/videojs/videojs-youtube/master/src/Youtube.js"></script>
+  <script src="https://rawgit.com/atlance01/vrapp-ionic/master/www/js/lib/videojs-playlist.js"></script>
+{% endblock social_facebook %}
+
+{% block css %}
+<style>
+
+
+</style>
+{% endblock css %}
+{% block content %}
+
+
+  <section id="background">
+
+            <div class="embed-responsive embed-responsive-16by9 video-css">
+              <video
+                class="video-js vjs-default-skin embed-responsive-item"
+                controls
+                preload="auto"
+                data-setup='{ "inactivityTimeout": 0 }'
+                autoplay
+                muted>
+              </video>
+            </div>
+
+        </div>
+      </div>
+
+  </section>
+
+  
+
+
+    <!-- header -->
+    <!--  Demos -->
+  <div class="contenedor"> 
+  {% for programa in programas %}   
+    <section id="demos1">
+        <div class="row" id="{{programa.nombre}}">
+          
+          <div class="large-12 columns">
+            <h4 class="fibra">{{programa.nombre}}</h4>
+          <div class="owl-carousel owl-theme">
+
+            {% for capitulo in programa.programa.all %}
+                <div class="item">
+                  <div class="image-content">
+                    <a href="{%url 'web:capitulo_detalle' capitulo.slug %}"><img src="{{capitulo.imagen_principal.url}}"></a>
+                  </div>
+                  <div class="image-caption">
+                    <h6 class="titulo-pelicula">{{capitulo.titulo}}</h6>
+                  </div>
+              </div>    
+            {% endfor %}
+
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endfor %}   
+  </div>
+  
+
+
+
+{% endblock content %}
+{% block js %}
+      <script>
+        let videoList = [
+        {% for video in video  %}
+            {     
+              sources: [
+                {
+                  src:
+                    "{{video.video_principal}}",
+                  type: "video/mp4",
+                },
+              ],
+            },
+        {% endfor %}
+    
+        ];
+  
+        let player = videojs(document.querySelector("video"), {});
+        try {
+          player.volume(1);
+        } catch (e) {
+          console.log(e);
+        }
+  
+        player.playlist(videoList);
+        player.playlist.autoadvance(0);
+      </script>
+{% endblock js %}

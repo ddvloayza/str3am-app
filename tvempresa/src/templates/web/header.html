@@ -1,0 +1,133 @@
+{% load static %}
+        <!-- nav Structure -->
+            <nav class="navbar navbar-expand-lg navbar-light">
+              <a href="{% url 'web:home' %}" class="navbar-brand"><img class="logo" src="{% static 'img/logo.png' %}"></a>
+              <button class="navbar-toggler burger" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">AUSPICIOS</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">EN VIVO</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      PROGRAMAS
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      {% for programa in programas  %}
+                        <a class="dropdown-item" href="http://tevempresa.com/#{{programa.nombre}}">{{programa.nombre|upper}}</a>
+                      {% endfor %}
+                    </div>
+                  </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                  <input class="form-control mr-sm-2" type="search" placeholder="Search" id="titulo" value="" aria-label="Search">
+                  <button class="btn btn-outline-success my-2 my-sm-0" type="button" data-toggle="modal"  data-target="#exampleModal">Search</button>
+                </form>
+              </div>
+            </nav>
+              <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Buscador</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body ">
+                      <div class="row ajax">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+{% block css %}
+<style type="text/css">
+  .modal-dialog {
+    max-width: 100%;
+    height: 100%;
+    margin: 0%;
+  }
+  .modal-content {
+      height: 100%;
+      background-color: #000000d9;
+  }
+  div#exampleModal {
+    padding: 0px!important;
+  }
+  .modal-header {
+    color: white;
+    border: none;
+}
+</style>
+  
+{% endblock css %}
+
+{% block js %}
+  <script type="text/javascript">
+    function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie != '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+              return cookieValue;
+  }
+
+
+  $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+          if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+              // Only send the token to relative URLs i.e. locally.
+              xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+          }
+      }
+  });
+
+            $('.btn-outline-success').on('click', function(e){
+              e.preventDefault();
+              busqueda = $('#titulo').val()
+              console.log('busqueda', busqueda)
+              data = {'busqueda': busqueda }
+                    $.ajax({
+                            url: '{% url 'web:buscador' %}',
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            data: JSON.stringify(data),
+                        success: function(data) {
+                        html_result = ''
+                        $.each(data['items_list'], function(index, val) {
+                          console.log('val', val['titulo'])
+                        if (val['titulo']) {
+                            html_result +='<div class="col-2"><div class=""><div class=""><a href="capitulo/'+val['slug']+'"><img src="'+val['image_url']+'"></a></div><div class=""><h6 class="">capitulo '+val['numero_capitulo']+'</h6></div></div></div>'
+                          }
+                        else {
+                          html_result += ''
+                        }
+                      });
+                      $('.ajax').html(html_result)     
+                    }
+              });
+            });
+
+      $('#myModal').on('shown.bs.modal', function () {
+      $('#myInput').trigger('focus')
+        });
+  </script>
+  
+{% endblock js %}

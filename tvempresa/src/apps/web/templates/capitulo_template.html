@@ -1,0 +1,184 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block social_facebook %}
+  <meta property="og:url"           content="{{request.build_absolute_uri}}" />
+  <meta property="og:type"          content="article" />
+  <meta property="og:title"         content="{{capitulo_detallado.titulo}}" />
+  <meta property="og:description"   content="{{capitulo_detallado.descripcion}}" />
+  <meta property="og:image"         content="http://tevempresa.com{{capitulo_detallado.imagen_principal.url}}" />
+  <meta property="og:image:width"   content="300"/>
+  <meta property="og:image:height"   content="300" />
+
+{% endblock social_facebook %}
+
+{% block css %}
+    <style type="text/css">
+        img.imagen-back-movie {
+          width: 100%;
+          height: 750px;
+        }
+        section.movie-descripccion {
+          margin-top: 5%;
+        }
+        span {
+          font-size: 100px;
+          color: white !important;
+        }
+        button.owl-prev {
+          position: absolute;
+          top: 15%;
+          left: 0%;
+        }
+        button.owl-next {
+          position: absolute;
+          top: 15%;
+          left: 98%;
+        }
+
+        .owl-theme .owl-nav [class*=owl-]:hover {
+              background: none;
+              color: #FFF;
+              text-decoration: none;
+        }
+        video#my_video {
+          width: 100%;
+        }
+
+        html {
+          background: black;
+        }
+
+        nav {
+            background-color: rgba(0, 0, 0, 0);
+            box-shadow: none;
+        }
+        .brand-logo{
+            left: 2rem;
+        }
+
+        .sidenav-color li a:hover:not(.login){
+            color:#4dd0e1;
+        }
+
+        h4 {
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .icons-shared {
+            display: table;
+            margin: auto;
+        }
+        .div_icon {
+            float: left;
+            margin: 10px;
+        }
+        .icons-shared a {
+            display: block;
+            text-align: center;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 20px;
+            width: 100%;
+        }
+        a.twitter {
+            background: #007bff;
+        }
+        a.linkedin {
+            background: #007bff;
+        }
+    </style>
+{% endblock css %}
+{% block content %}
+  <body>
+
+                    <section class="movie-descripccion">
+                      <div class="row container">
+                          <div class="col-md-7">
+                            <div class="video__index">
+                            <video controls id="my_video">
+                              <source src="{{capitulo_detallado.video}}" type="video/mp4">
+                            </video>
+                            </div>
+                          </div>
+                          <div class="col-md-5 description">                 
+                              {% if capitulo_detallado.logo_titulo%}
+                              <div class="img_productora">
+                                <img class="logo__productora" src="{{capitulo_detallado.logo_titulo.url}}">
+                              </div>
+                              {% else %}
+                              <div class="img_productora">
+                                <img class="logo__productora" src="{{capitulo_detallado.programa.imagen_programa.url}}">
+                              </div>
+                              {% endif %}
+                              <div>
+                                <p class="white-text texto_fecha">
+                                  {{capitulo_detallado.titulo}}
+                                </p>
+                                <p class="white-text">
+                                  {{capitulo_detallado.descripcion}}
+                                </p>
+                                {% if capitulo_detallado.nombre_productora_por_capitulo %}
+                                <p class="white-text">
+                                  Producido por : {{capitulo_detallado.nombre_productora_por_capitulo}}
+                                </p>
+                                {% elif capitulo_detallado.nombre_productora_por_capitulo == None %}
+
+                                {% else %}
+                                <p class="white-text">
+                                  Producido por : {{capitulo_detallado.programa.productora}}
+                                </p>
+                                {% endif %}
+                              </div>
+                              <h2 class="titulo_compartenos">Compartenos en :</h2>
+                              <div class="icons-shared">
+                                <div class="div_icon">
+                                  <a href="http://www.facebook.com/sharer.php?u={{request.build_absolute_uri}}" target="blank" class="facebook"><i class="fa fa-facebook"></i></a> 
+                                </div>
+                                <div class="div_icon">
+                                  <a href="#" class="instagram"><i class="fa fa-instagram"></i></a> 
+                                </div>
+                                <div class="div_icon">
+                                  <a href="#" class="twitter"><i class="fa fa-twitter"></i></a> 
+                                </div>
+                                <div class="div_icon">
+                                  <a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a>
+                                </div>
+                              </div>
+                              <br>
+                          </div>
+                      </div>
+                    </section>
+                    <div class="contenedor__capitulo"> 
+                      <section id="capitulo__slider">
+                        <div class="row">
+                          <div class="large-12 columns">
+                            <h4>{{capitulo_detallado.programa}}</h4>
+                            <div class="owl-carousel owl-theme">
+                                
+                              {% for capitulo in capitulos  %}
+                              <div class="item">
+                                <div class="image-content">
+                                  <a href="{%url 'web:capitulo_detalle' capitulo.slug %}"><img src="{{capitulo.imagen_principal.url}}"></a>
+                                </div>
+                                <div class="image-caption">
+                                  <h6 class="titulo-pelicula">{{capitulo.titulo|truncatechars:50}}</h6>
+                                </div>
+                            </div>  
+                              {% endfor %}
+           
+                            </div>
+
+                          </div>
+                        </div>
+                      </section>
+                  </div>
+  </body>
+
+
+{% endblock content %}
+

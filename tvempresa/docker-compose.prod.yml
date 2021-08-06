@@ -1,0 +1,47 @@
+version: '3'
+services:
+  db:
+    image: "postgres:10.3-alpine"
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:1.15
+    container_name: nginx01
+    ports:
+      - "80:80"
+    volumes:
+      # - ./src:/src
+      - ./webapp/nginx:/etc/nginx/conf.d
+      - ./static:/static
+      - ./media:/media
+    depends_on:
+      - web
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile-prod
+      args:
+        - DJANGO_ENV=production
+    env_file:
+      - .env
+    command: sh -c "gunicorn --env DJANGO_SETTINGS_MODULE=src.settings.prod src.wsgi -b 0.0.0.0:8000"
+    depends_on:
+      - db
+    volumes:
+      - ./src:/src
+      - static:/www/static
+      - media:/www/media
+    ports:
+      - "8000:8080"
+volumes:
+  db_data:
+    external: true
+  media:
+  static:
+
